@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SharpHelpers.ExtensionMethods
 {
     public static class CollectionExtensions
     {
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source)
         {
-            foreach (var item in source)
-                action(item);
+            return source == null || source.Count() == 0;
         }
     }
 }

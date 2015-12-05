@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Configuration;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 
@@ -42,6 +44,47 @@ namespace SharpHelpers.ExtensionMethods
             }
             else
                 return default(T);
+        }
+
+        public static T FromAppSettings<T>(this string key, T defaultValue = default(T)) where T : IConvertible
+        {
+            //Credits to author at http://extensionmethod.net/csharp/generic/fromappsettings
+            if (key.IsNullOrWhiteSpace())
+                return defaultValue;
+
+            var value = ConfigurationManager.AppSettings[key];
+
+            if (value.IsNullOrWhiteSpace())
+                return defaultValue;
+
+            var tc = Type.GetTypeCode(typeof(T));
+
+            switch (tc)
+            {
+                case TypeCode.Boolean:
+                case TypeCode.Byte:
+                case TypeCode.DateTime:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.String:
+                    T output;
+                    try
+                    {
+                        output = (T)Convert.ChangeType(value, tc);
+                    }
+                    catch
+                    {
+                        output = defaultValue;
+                    }
+
+                    return output;
+
+                default:
+                    throw new NotSupportedException();
+            }
         }
     }
 }
